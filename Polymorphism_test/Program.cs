@@ -21,14 +21,16 @@ namespace VendingMachine_Assignment
             IVending show = new VendingOptions();
 
             List<Product> showProd = new List<Product>();
+            List<Product> AllProducts = new List<Product>();
 
-            Customer customer = new Customer(0);
+            Customer customer = new Customer();
             List<Customer> AvailableInventory = new List<Customer>();
 
             int moneypool = customer.Money;
             int fill = 0;
 
             AvailableInventory.Add(customer);
+            List<Product> customerItems = customer.Inventory;
 
 
 
@@ -45,9 +47,7 @@ namespace VendingMachine_Assignment
                 Write($"\nAvailable funds: {moneypool} kr \nYour inventory: ");
                 foreach (Customer cust in AvailableInventory)
                 {
-                    List<Product> customerItems = customer.InventoryList();
-                    
-                    if (customerItems.Any())
+                    if (AvailableInventory.Any())
                     {
                         foreach (Product item in customerItems)
                         {
@@ -70,7 +70,7 @@ namespace VendingMachine_Assignment
 
                     case 1:
                         WriteLine("\nProducts\n================\n");
-                        showProd = show.ShowProducts();
+                        AllProducts = show.ShowProducts(AllProducts);
                         WriteLine("\n================\n");
 
                         do
@@ -78,9 +78,8 @@ namespace VendingMachine_Assignment
                             WriteLine("\nType ID to examine product, 0 to quit");
                             int userExamine = GetIntFromUser();
                             
-                            foreach (Product prod in showProd)
+                            foreach (Product prod in AllProducts)
                             {
-
                                 if (prod.ID.Equals(userExamine))
                                 {
                                     if (prod is Food)
@@ -119,21 +118,15 @@ namespace VendingMachine_Assignment
 
                             fill = GetIntFromUser();
 
-                            show.InsertMoney(fill, moneypool);
-                            if (values.Contains(fill))
+                            if (fill.Equals(0))
                             {
-                                moneypool += fill;
-                                WriteLine($"\n\nAdded {fill} kr!! \nAvailable funds: {moneypool} kr");
-                                keepFill = true;
-
-                            } else if (fill.Equals(0)) {
                                 WriteLine($"\nThank you!\nAvailable funds: {moneypool} kr");
                                 keepFill = false;
                                 break;
                             }
                             else
                             {
-                                WriteLine("\nNot a valid amount. Try again.\n");
+                                moneypool = show.InsertMoney(fill, moneypool);
                                 keepFill = true;
                             }
                         }
@@ -142,57 +135,57 @@ namespace VendingMachine_Assignment
                         break;
 
                     case 3:
-                       
-                        do {
+
+                        do
+                        {
                             Console.WriteLine("\nWhat would you like to purchase? Choose any product below.");
                             Console.WriteLine("\nType product ID to purchase, 0 to quit");
 
                             WriteLine("\nProducts\n================\n");
-                            show.ShowProducts();
+                            AllProducts = show.ShowProducts(AllProducts);
                             WriteLine("\n================\n");
 
                             WriteLine($"\nAvailable funds: {moneypool} kr");
 
                             int userpurchase = GetIntFromUser();
-                            foreach (Product prod in showProd)
+                            int price = 0;
+
+                            if (userpurchase.Equals(0))
                             {
-                                
-                                if (prod.ID.Equals(userpurchase))
+                                WriteLine("\nThank you!\n");
+                                show.EndTransaction(moneypool);
+                                keepFill = false;
+                                break;
+
+                            }
+                            else
+                            {
+
+                                foreach (Product prod in AllProducts)
                                 {
-                                    if (moneypool > prod.Price || moneypool == prod.Price)
+
+                                    if (prod.ID.Equals(userpurchase))
                                     {
+                                        WriteLine("hello");
                                         if (prod is Food)
                                         {
-                                            Console.WriteLine($"Purchased {prod.Name} for {prod.Price} kr!!");
                                             customer.AddInventory(prod);
                                         }
                                         else if (prod is Drink)
                                         {
-                                            Console.WriteLine($"Purchased {prod.Name} for {prod.Price} kr!!");
                                             customer.AddInventory(prod);
                                         }
 
-                                        moneypool = moneypool - prod.Price;
-                                        keepFill = true;
 
-                                    } else
-                                    {
-                                        WriteLine("\nYou don't have enough money for that product!\n");
-                                        keepFill = true;
-                                        break;
                                     }
-                                    
-                                }
-                                else if (userpurchase.Equals(0))
-                                {
-                                    WriteLine("\nThank you!");
-                                    WriteLine($"\nYou received the following change: ");
-                                    show.EndTransaction(moneypool);
-                                    keepFill = false;
-                                    break;
+
                                 }
 
+                                moneypool = show.Purchase(moneypool, price, userpurchase);
+                                keepFill = true;
                             }
+
+
                         }
                         while (keepFill);
 
@@ -200,17 +193,17 @@ namespace VendingMachine_Assignment
 
                     case 4:
                         
-                        List<Product> customerItems = customer.InventoryList();
-                        
                         if (customerItems.Any())
                         {
                             Console.WriteLine("\nType item ID to select and use product, 0 to quit");
-
+                            WriteLine("\nYour items\n================\n");
                             foreach (Product item in customerItems)
                             {
-                                Console.Write($"{item.Info()}\n");
+                                
+                                Console.Write($"{item.Info()} -- How to use: {item.UserManual()}\n");
 
                             }
+                            WriteLine("\n================\n");
 
                             int userSelect = GetIntFromUser();
 
@@ -237,7 +230,10 @@ namespace VendingMachine_Assignment
                             WriteLine("\nYou don't have any items!");
                         }
 
+                        break;
 
+                    case 5:
+                        
                         break;
 
                     default:
@@ -246,6 +242,7 @@ namespace VendingMachine_Assignment
                 }
 
             }
+
 
             static int GetIntFromUser()
             {

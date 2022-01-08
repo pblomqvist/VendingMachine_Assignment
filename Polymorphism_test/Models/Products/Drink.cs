@@ -15,7 +15,12 @@ namespace VendingMachine_Assignment.Models.Products
 
         public new string Info()
         {
-            return "Drink" + base.Info();
+            return base.Info();
+        }
+
+        public override string UserManual()
+        {
+            return "Drink me";
         }
 
     }

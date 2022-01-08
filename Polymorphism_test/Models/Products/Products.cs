@@ -31,6 +31,11 @@ namespace VendingMachine_Assignment
             return $"[{ID}] {Name} {Price} kr \nDescription: {Description}";
         }
 
+        public virtual string UserManual()
+        {
+            return "Instructions how to use product";
+        }
+
         public static void ResetCounter()
         {
             idCounter = 0;

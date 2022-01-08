@@ -7,46 +7,138 @@ namespace VendingMachine_Assignment.Models.Features
 {
     public class Change
     {
-        public int thousandBills { get; }
-        public int fiveHundredBills { get; }
-        public int hundredBills { get; }
-        public int fiftyBills { get; }
-        public int twentyBills { get; }
-        public int tenCoins { get; }
-        public int fiveCoins { get; }
-        public int twoCoins { get; }
-        public int oneCoins { get; }
+        
+        public string GiveChange(int moneypool, string msg)
+        {
+            string result = string.Empty;
+            int thousand = 0;
+            int fivehundred = 0;
+            int hundred = 0;
+            int fifty = 0;
+            int twenty = 0;
+            int ten = 0;
+            int five = 0;
+            int two = 0;
+            int one = 0;
 
-        public Change(int change)
+            if (moneypool > 0)
+            {
+                while (moneypool > 0)
+                {
+                    if (moneypool >= 1000)
+                    {
+                        thousand++;
+                        moneypool -= 1000;
+                        
+                    } else if (moneypool >= 500)
+                    {
+                        fivehundred++;
+                        moneypool -= 500;
+                    }
+                    else if (moneypool >= 100)
+                    {
+                        hundred++;
+                        moneypool -= 100;
+                    }
+                    else if (moneypool >= 50)
+                    {
+                        fifty++;
+                        moneypool -= 50;
+                    }
+                    else if (moneypool >= 20)
+                    {
+                        twenty++;
+                        moneypool -= 20;
+                    }
+                    else if (moneypool >= 10)
+                    {
+                        ten++;
+                        moneypool -= 10;
+                    }
+                    else if (moneypool >= 5)
+                    {
+                        five++;
+                        moneypool -= 5;
+                    }
+                    else if (moneypool >= 2)
+                    {
+                        two++;
+                        moneypool -= 2;
+                    }
+                    else if (moneypool >= 1)
+                    {
+                        one++;
+                        moneypool -= 1;
+                    }
+
+                }
+
+                result = GetMessage(thousand, fivehundred, hundred, fifty, twenty, ten, five, two, one);
+
+            } else
+            {
+                result = "No money to return";
+            }
+
+            return result;
+        }
+
+        private string GetMessage(int thousand, int fivehundred,
+                                int hundred, int fifty, int twenty,
+                                int ten,int five, int two, int one)
         {
 
-            thousandBills = (change / 1000);
-            change %= 1000;
+            string result = $"Your change is:\n";
 
-            fiveHundredBills = (change / 500);
-            change %= 500;
+            // Message assembly
+            if (thousand > 0)
+            {
+                result += $"{thousand} x 1000 kr\n";
+            }
 
-            hundredBills = (change / 100);
-            change %= 100;
+            if (fivehundred > 0)
+            {
+                result += $"{fivehundred} x 500 kr\n";
+            }
 
-            fiftyBills = (change / 50);
-            change %= 50;
+            if (hundred > 0)
+            {
+                result += $"{hundred} x 100 kr\n";
+            }
 
-            twentyBills = (change / 20);
-            change %= 20;
+            if (fifty > 0)
+            {
+                result += $"{fifty} x 50 kr\n";
+            }
 
-            tenCoins = (change / 10);
-            change %= 10;
+            if (twenty > 0)
+            {
+                result += $"{twenty} x 20 kr\n";
+            }
 
-            fiveCoins = (change / 5);
-            change %= 5;
+            if (ten > 0)
+            {
+                result += $"{ten} x 10 kr\n";
+            }
 
-            twoCoins = (change / 2);
-            change %= 2;
+            if (five > 0)
+            {
+                result += $"{five} x 5 kr\n";
+            }
 
-            oneCoins = (change / 1);
-            change %= 1;
+            if (two > 0)
+            {
+                result += $"{two} x 2 kr\n";
+            }
 
+            if (one > 0)
+            {
+                result += $"{one} x 1 kr\n";
+            }
+
+
+
+            return result;
         }
 
     }

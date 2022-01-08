@@ -13,10 +13,16 @@ namespace VendingMachine_Assignment.Models.Products
             this.Description = desc;
         }
 
+        public override string UserManual()
+        {
+            return "Eat me";
+        }
+
         public new string Info()
         {
-            return "Food " + base.Info();
+            return base.Info();
         }
+
 
     }
 
