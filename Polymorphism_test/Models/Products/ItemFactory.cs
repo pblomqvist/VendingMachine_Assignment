@@ -4,12 +4,12 @@ using System.Text;
 
 namespace VendingMachine_Assignment.Models.Products
 {
-    class ItemFactory
+    public class ItemFactory
     {
         
         public List<Product> AllProducts = new List<Product>();
 
-        public List<Product> allProds()
+        public List<Product> AllProds()
         {
             Food Chips = new Food("Chips", 50, "Tasty snack made of potato");
             Food Chocolate = new Food("Chocolate", 80, "Tasty snack made of cocoa");
@@ -19,6 +19,10 @@ namespace VendingMachine_Assignment.Models.Products
             Drink Fanta = new Drink("Fanta", 20, "Sugary orange drink");
             Drink Water = new Drink("Water", 10, "Just some plain water");
 
+            Phone iPhone = new Phone("iPhone 12", 7000, "A smartphone produced by Apple");
+            Phone Samsung = new Phone("Samsung Galaxy S21", 5000, "A smartphone produced by Samsung");
+            Phone Huawei = new Phone("Huawei P40", 4500, "A smartphone produced by Huawei");
+
             List<Product> prods = new List<Product>
             {
                 Chips,
@@ -26,7 +30,10 @@ namespace VendingMachine_Assignment.Models.Products
                 Carbonara,
                 CocaCola,
                 Fanta,
-                Water
+                Water,
+                iPhone,
+                Samsung,
+                Huawei
             };
 
 

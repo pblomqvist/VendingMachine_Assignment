@@ -11,40 +11,37 @@ namespace VendingMachine_Assignment
     {
         static void Main(string[] args)
         {
-            
-            bool running = true;
-            bool keepFill = false;
-
-            int[] denominations = { 1, 2, 5, 10, 20, 50, 100, 500, 1000 };
-            IList<int> values = Array.AsReadOnly(denominations);
-
-            IVending show = new VendingOptions();
-
-            List<Product> showProd = new List<Product>();
-            List<Product> AllProducts = new List<Product>();
-
+            Change denoms = new Change();
             Customer customer = new Customer();
-            List<Customer> AvailableInventory = new List<Customer>();
 
-            int moneypool = customer.Money;
             int fill = 0;
+            int inputSelect = 0;
+            int balance = customer.Money;
 
-            AvailableInventory.Add(customer);
+            bool running = true;
+            bool keepRunning = false;
+
+            IList<int> values = Array.AsReadOnly(denoms.denominations);
+            List<Product> AllProducts = new List<Product>();
+            List<Customer> AvailableInventory = new List<Customer>
+            {
+                customer
+            };
             List<Product> customerItems = customer.Inventory;
+            
+            IVending vendAction = new VendingOptions();
 
-
-
-            WriteLine("Welcome to Vending Machine!");
+            WriteLine("\n\n\nWELCOME TO VENDING MACHINE!\n");
             while (running)
             {
-                WriteLine("\n\nWhat would you like to do?\n" +
+                WriteLine("\n---\nWhat would you like to do?\n" +
                     "\n0: Exit" +
                     "\n1: Show all products" +
                     "\n2: Insert money " +
                     "\n3: Purchase" +
                     "\n4: Use products" );
                 
-                Write($"\nAvailable funds: {moneypool} kr \nYour inventory: ");
+                Write($"\nBALANCE: {balance} kr \nINVENTORY: ");
                 foreach (Customer cust in AvailableInventory)
                 {
                     if (AvailableInventory.Any())
@@ -55,12 +52,13 @@ namespace VendingMachine_Assignment
                         }
                     } else
                     {
-                        WriteLine("N/A");
+                        WriteLine("Empty");
                     }
 
                 }
+                WriteLine("\n---\n\n");
 
-                int action = GetIntFromUser();
+               int action = GetIntFromUser();
 
                 switch (action)
                 {
@@ -69,39 +67,27 @@ namespace VendingMachine_Assignment
                         break;
 
                     case 1:
-                        WriteLine("\nProducts\n================\n");
-                        AllProducts = show.ShowProducts(AllProducts);
-                        WriteLine("\n================\n");
+
+                        AllProducts = vendAction.ShowAll(AllProducts);
 
                         do
                         {
-                            WriteLine("\nType ID to examine product, 0 to quit");
-                            int userExamine = GetIntFromUser();
+                            WriteLine("\nType ID to examine product, 0 to quit\n---\n");
+                            inputSelect = GetIntFromUser();
                             
-                            foreach (Product prod in AllProducts)
+                            if (inputSelect.Equals(0))
                             {
-                                if (prod.ID.Equals(userExamine))
-                                {
-                                    if (prod is Food)
-                                    {
-                                        Console.WriteLine("\n"+ (prod as Food).Examine()+ "\n");
-                                    }
-                                    else if (prod is Drink)
-                                    {
-                                        Console.WriteLine("\n"+ (prod as Drink).Examine()+ "\n");
-                                    }
-                                    keepFill = true;
-
-                                }
-                                else if (userExamine.Equals(0))
-                                {
-                                    keepFill = false;
-                                    break;
-                                }
-
+                                keepRunning = false;
+                                break;
+                            } else
+                            {
+                                vendAction.Examine(inputSelect);
+                                keepRunning = true;
                             }
+
+                            
                         }
-                        while (keepFill);
+                        while (keepRunning);
 
                         break;
 
@@ -109,28 +95,28 @@ namespace VendingMachine_Assignment
 
                         do
                         {
-                            Console.WriteLine("\nWhat would you like to insert? Choose any amount below.");
+                            Console.WriteLine("\n---\n\nWhat would you like to insert? Choose any amount below.");
                             foreach (int val in values)
                             {
                                 Console.Write(val.ToString() + " kr | ");
                             }
-                            Console.WriteLine("\n\nEnter '0' to stop refill.\n\n");
+                            Console.WriteLine("\n\nEnter '0' to stop refill.\n\n---\n");
 
                             fill = GetIntFromUser();
 
                             if (fill.Equals(0))
                             {
-                                WriteLine($"\nThank you!\nAvailable funds: {moneypool} kr");
-                                keepFill = false;
+                                WriteLine($"\n---\n\nThank you!\n\nBalance: {balance} kr\n\n---");
+                                keepRunning = false;
                                 break;
                             }
                             else
                             {
-                                moneypool = show.InsertMoney(fill, moneypool);
-                                keepFill = true;
+                                balance = vendAction.InsertMoney(fill, balance);
+                                keepRunning = true;
                             }
                         }
-                        while (keepFill);
+                        while (keepRunning);
                         
                         break;
 
@@ -141,20 +127,18 @@ namespace VendingMachine_Assignment
                             Console.WriteLine("\nWhat would you like to purchase? Choose any product below.");
                             Console.WriteLine("\nType product ID to purchase, 0 to quit");
 
-                            WriteLine("\nProducts\n================\n");
-                            AllProducts = show.ShowProducts(AllProducts);
-                            WriteLine("\n================\n");
+                            AllProducts = vendAction.ShowAll(AllProducts);
 
-                            WriteLine($"\nAvailable funds: {moneypool} kr");
+                            WriteLine($"\nAvailable funds: {balance} kr");
 
-                            int userpurchase = GetIntFromUser();
+                            inputSelect = GetIntFromUser();
                             int price = 0;
 
-                            if (userpurchase.Equals(0))
+                            if (inputSelect.Equals(0))
                             {
                                 WriteLine("\nThank you!\n");
-                                show.EndTransaction(moneypool);
-                                keepFill = false;
+                                vendAction.EndTransaction(balance);
+                                keepRunning = false;
                                 break;
 
                             }
@@ -163,81 +147,90 @@ namespace VendingMachine_Assignment
 
                                 foreach (Product prod in AllProducts)
                                 {
-
-                                    if (prod.ID.Equals(userpurchase))
+                                    if (balance > prod.Price || balance == prod.Price)
                                     {
-                                        WriteLine("hello");
-                                        if (prod is Food)
+                                        if (prod.ID.Equals(inputSelect))
                                         {
-                                            customer.AddInventory(prod);
-                                        }
-                                        else if (prod is Drink)
-                                        {
-                                            customer.AddInventory(prod);
-                                        }
+                                            if (prod is Food)
+                                            {
+                                                customer.AddInventory(prod);
+                                            }
+                                            else if (prod is Drink)
+                                            {
+                                                customer.AddInventory(prod);
+                                            }
+                                            else if (prod is Phone)
+                                            {
+                                                customer.AddInventory(prod);
+                                            }
 
-
+                                        }
+                                    }
+                                    else
+                                    {
+                                        
+                                        Console.WriteLine("\n---\nYou don't have enough money for that product!\n");
+                                        keepRunning = false;
+                                        break;
                                     }
 
                                 }
 
-                                moneypool = show.Purchase(moneypool, price, userpurchase);
-                                keepFill = true;
+                                balance = vendAction.Purchase(balance, price, inputSelect);
+                                keepRunning = true;
                             }
 
 
                         }
-                        while (keepFill);
+                        while (keepRunning);
 
                         break;
 
                     case 4:
-                        
-                        if (customerItems.Any())
+
+                        do
                         {
-                            Console.WriteLine("\nType item ID to select and use product, 0 to quit");
-                            WriteLine("\nYour items\n================\n");
-                            foreach (Product item in customerItems)
+                            
+                            if (customerItems.Any())
                             {
-                                
-                                Console.Write($"{item.Info()} -- How to use: {item.UserManual()}\n");
-
-                            }
-                            WriteLine("\n================\n");
-
-                            int userSelect = GetIntFromUser();
-
-                            foreach (Product tobeRemoved in customerItems.Reverse<Product>())
-                            {
-                                if (tobeRemoved.ID.Equals(userSelect))
+                                Console.WriteLine("\nType item ID to select and use product, 0 to quit");
+                                WriteLine("\nYour items\n---");
+                                foreach (Product item in customerItems)
                                 {
-                                    if (tobeRemoved is Food)
-                                    {
-                                        customerItems.Remove(tobeRemoved);
-                                        Console.WriteLine($"Ate {tobeRemoved.Name}!!\n");
-                                    }
-                                    else if (tobeRemoved is Drink)
-                                    {
-                                        customerItems.Remove(tobeRemoved);
-                                        Console.WriteLine($"Drank {tobeRemoved.Name}!!\n");
-                                    }
-                                    
+
+                                    Console.Write($"{item.Info()} -- How to use: {item.UserManual()}\n");
+
                                 }
+                                WriteLine("---\n");
+
+                                inputSelect = GetIntFromUser();
+
+                                if (inputSelect.Equals(0))
+                                {
+                                    keepRunning = false;
+                                    break;
+
+                                } else
+                                {
+                                    customerItems = vendAction.Use(customerItems, inputSelect);
+                                    keepRunning = true;
+                                }
+                                
+                            }
+                            else
+                            {
+                                WriteLine("\n---\nYou don't have any items!\n\n");
+                                keepRunning = false;
                             }
 
-                        } else
-                        {
-                            WriteLine("\nYou don't have any items!");
-                        }
 
-                        break;
+                        } while (keepRunning);
 
-                    case 5:
                         
                         break;
 
                     default:
-                        WriteLine("Something went wrong");
+                        WriteLine("\nOops! Something went wrong.\n");
                         break;
                 }
 
@@ -253,7 +246,7 @@ namespace VendingMachine_Assignment
                 {
                     try
                     {
-                        WriteLine("\nEnter number:");
+                        WriteLine("\n\nEnter number:");
                         success = int.TryParse(ReadLine(), out userInput);
                     }
                     catch (OverflowException)

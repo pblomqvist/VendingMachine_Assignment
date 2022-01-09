@@ -28,7 +28,7 @@ namespace VendingMachine_Assignment
 
         public string Examine()
         {
-            return $"[{ID}] {Name} {Price} kr \nDescription: {Description}";
+            return $"[{ID}] {Name} -- {Price} kr \nDescription: {Description}";
         }
 
         public virtual string UserManual()

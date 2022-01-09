@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VendingMachine_Assignment.Models.Products
 {
-    class Food : Product
+    public class Food : Product
     {
         public Food(string name, int price, string desc) : base(name, price, desc)
         {
@@ -15,7 +15,7 @@ namespace VendingMachine_Assignment.Models.Products
 
         public override string UserManual()
         {
-            return "Eat me";
+            return "Eat the food";
         }
 
         public new string Info()

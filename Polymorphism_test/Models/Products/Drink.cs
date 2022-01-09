@@ -20,7 +20,7 @@ namespace VendingMachine_Assignment.Models.Products
 
         public override string UserManual()
         {
-            return "Drink me";
+            return "Drink the drink";
         }
 
     }

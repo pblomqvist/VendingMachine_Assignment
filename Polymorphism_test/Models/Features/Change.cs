@@ -7,8 +7,8 @@ namespace VendingMachine_Assignment.Models.Features
 {
     public class Change
     {
-        
-        public string GiveChange(int moneypool, string msg)
+        public int[] denominations = { 1, 2, 5, 10, 20, 50, 100, 500, 1000 };
+        public string GiveChange(int balance, string msg)
         {
             string result = string.Empty;
             int thousand = 0;
@@ -21,54 +21,54 @@ namespace VendingMachine_Assignment.Models.Features
             int two = 0;
             int one = 0;
 
-            if (moneypool > 0)
+            if (balance > 0)
             {
-                while (moneypool > 0)
+                while (balance > 0)
                 {
-                    if (moneypool >= 1000)
+                    if (balance >= 1000)
                     {
                         thousand++;
-                        moneypool -= 1000;
+                        balance -= 1000;
                         
-                    } else if (moneypool >= 500)
+                    } else if (balance >= 500)
                     {
                         fivehundred++;
-                        moneypool -= 500;
+                        balance -= 500;
                     }
-                    else if (moneypool >= 100)
+                    else if (balance >= 100)
                     {
                         hundred++;
-                        moneypool -= 100;
+                        balance -= 100;
                     }
-                    else if (moneypool >= 50)
+                    else if (balance >= 50)
                     {
                         fifty++;
-                        moneypool -= 50;
+                        balance -= 50;
                     }
-                    else if (moneypool >= 20)
+                    else if (balance >= 20)
                     {
                         twenty++;
-                        moneypool -= 20;
+                        balance -= 20;
                     }
-                    else if (moneypool >= 10)
+                    else if (balance >= 10)
                     {
                         ten++;
-                        moneypool -= 10;
+                        balance -= 10;
                     }
-                    else if (moneypool >= 5)
+                    else if (balance >= 5)
                     {
                         five++;
-                        moneypool -= 5;
+                        balance -= 5;
                     }
-                    else if (moneypool >= 2)
+                    else if (balance >= 2)
                     {
                         two++;
-                        moneypool -= 2;
+                        balance -= 2;
                     }
-                    else if (moneypool >= 1)
+                    else if (balance >= 1)
                     {
                         one++;
-                        moneypool -= 1;
+                        balance -= 1;
                     }
 
                 }
@@ -77,7 +77,7 @@ namespace VendingMachine_Assignment.Models.Features
 
             } else
             {
-                result = "No money to return";
+                result = "\n---\n\nNo money to return\n\n---\n";
             }
 
             return result;
@@ -88,7 +88,7 @@ namespace VendingMachine_Assignment.Models.Features
                                 int ten,int five, int two, int one)
         {
 
-            string result = $"Your change is:\n";
+            string result = $"\n---\n\nYour change is:\n";
 
             // Message assembly
             if (thousand > 0)
