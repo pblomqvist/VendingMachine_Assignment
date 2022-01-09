@@ -81,7 +81,7 @@ namespace TestVendingMachine
 
             msg = change.GiveChange(balance, msg);
 
-            Assert.Equal("Your change is:\n4 x 100 kr\n1 x 50 kr\n", msg);
+            Assert.Equal("\n---\n\nYour change is:\n4 x 100 kr\n1 x 50 kr\n", msg);
 
         }
 

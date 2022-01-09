@@ -77,7 +77,7 @@ namespace VendingMachine_Assignment.Models.Features
 
             } else
             {
-                result = "\n---\n\nNo money to return\n\n---\n";
+                result = "No money to return";
             }
 
             return result;
